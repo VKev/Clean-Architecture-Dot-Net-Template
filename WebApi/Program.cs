@@ -1,6 +1,8 @@
 using Application;
 using Infrastructure;
+using Infrastructure.Context;
 using Infrastructure.Utils;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +19,9 @@ builder.Services.AddLogging(loggingBuilder =>
     loggingBuilder.AddSerilog();
 });
 
+
+builder.Services.AddDbContext<MyDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services
     .AddApplication()

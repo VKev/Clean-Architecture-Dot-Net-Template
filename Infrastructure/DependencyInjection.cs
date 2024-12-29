@@ -2,6 +2,7 @@ using System;
 using Infrastructure.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Infrastructure.Configs;
 
 namespace Infrastructure
 {
@@ -9,35 +10,47 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
+            string solutionDirectory = Directory.GetParent(Directory.GetCurrentDirectory())?.FullName ?? "";
+            if (solutionDirectory != null)
+            {
+                DotNetEnv.Env.Load(Path.Combine(solutionDirectory, ".env"));
+            }
+            services.AddSingleton<EnvironmentConfig>();
+
             using var serviceProvider = services.BuildServiceProvider();
             var logger = serviceProvider.GetRequiredService<ILogger<AutoScaffold>>();
+            var config = serviceProvider.GetRequiredService<EnvironmentConfig>();
+
             if (Environment.GetEnvironmentVariable("IS_SCAFFOLDING") != "true")
             {
                 var scaffold = new AutoScaffold(logger)
                     .Configure(
-                        "test",
-                        28996,
-                        "test",
-                        "test",
-                        "test",
-                        "postgres")
-                    .SetPaths("Entities", "Context", "MyDbContext", "Build/obj", "../Infrastructure/Infrastructure.csproj");
+                        config.DatabaseHost,
+                        config.DatabasePort,
+                        config.DatabaseName,
+                        config.DatabaseUser,
+                        config.DatabasePassword,
+                        config.DatabaseProvider);
 
                 scaffold.UpdateAppSettings();
 
+                var autoMigration = new AutoMigration(logger);
+
                 string currentHash = SchemaComparer.GenerateDatabaseSchemaHash(
-                    "test",
-                    28996,
-                    "test",
-                    "test",
-                    "test"
+                    config.DatabaseHost,
+                    config.DatabasePort,
+                    config.DatabaseName,
+                    config.DatabaseUser,
+                    config.DatabasePassword
                 );
 
                 if (!SchemaComparer.TryGetStoredHash(out string storedHash) || currentHash != storedHash)
                 {
+                    autoMigration.GenerateMigration();
                     logger.LogInformation("Database schema has changed. Performing scaffolding...");
                     SchemaComparer.SaveHash(currentHash);
-                    scaffold.Run();
+                    if(Environment.GetEnvironmentVariable("IS_MIGRATING") == "true")
+                        scaffold.Run();
                 }
                 else
                 {
