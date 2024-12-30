@@ -1,5 +1,6 @@
 using Application;
 using Infrastructure;
+using Infrastructure.Configs;
 using Infrastructure.Context;
 using Infrastructure.Utils;
 using Microsoft.EntityFrameworkCore;
