@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Infrastructure.Entities;
+namespace Domain.Entities;
 
 public partial class User
 {
@@ -12,5 +12,4 @@ public partial class User
     public string Password { get; set; } = null!;
 
     public DateTime? CreatedAt { get; set; }
-
 }

@@ -19,7 +19,6 @@ namespace Infrastructure.Utils
         private string MsBuildProjectExtensionsPath { get; set; } = "Build/obj";
         private string ProjectPath { get; set; } = "../Infrastructure/Infrastructure.csproj";
         private string StartupProject { get; set; } = "../WebApi/WebApi.csproj";
-        
         // Connection string properties
         private string Host { get; set; } = "localhost";
         private int Port { get; set; } = 5432;
@@ -39,7 +38,6 @@ namespace Infrastructure.Utils
 
             try
             {
-
                 var arguments = $"ef migrations {command} {additionalArgs} " +
                               $"--msbuildprojectextensionspath \"{MsBuildProjectExtensionsPath}\" " +
                               $"--project {ProjectPath} " +
@@ -78,7 +76,6 @@ namespace Infrastructure.Utils
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
                 process.WaitForExit();
-
                 if (process.ExitCode != 0)
                 {
                     throw new Exception($"Migration {command} process failed. Check the logs for details.");
@@ -96,7 +93,7 @@ namespace Infrastructure.Utils
                 Environment.SetEnvironmentVariable("IS_MIGRATING", null);
             }
         }
-
+        
         public void GenerateMigration()
         {
             _logger.LogInformation("Generating new migration: {MigrationName}", MigrationName);

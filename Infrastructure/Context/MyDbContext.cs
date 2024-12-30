@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Context;
@@ -15,12 +16,4 @@ public partial class MyDbContext : DbContext
     {
     }
 
-
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        
-    }
-
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

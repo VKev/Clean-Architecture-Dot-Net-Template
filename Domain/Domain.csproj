@@ -9,4 +9,8 @@
     <BaseIntermediateOutputPath>$(MSBuildProjectDirectory)\Build\obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2" />
+  </ItemGroup>
+
 </Project>

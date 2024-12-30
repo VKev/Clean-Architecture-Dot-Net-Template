@@ -21,7 +21,7 @@ namespace Infrastructure.Utils
         private string Username { get; set; } = "postgres";
         private string Password { get; set; } = "password";
         private string Provider { get; set; } = "Npgsql.EntityFrameworkCore.PostgreSQL";
-        private string OutputDir { get; set; } = "Entities";
+        private string OutputDir { get; set; } = "../Domain/Entities";
         private string ContextDir { get; set; } = "Context";
         private string ContextName { get; set; } = "MyDbContext";
         private string MsBuildProjectExtensionsPath { get; set; } = "Build/obj";
@@ -87,9 +87,11 @@ namespace Infrastructure.Utils
 
         public void Run()
         {
+            if(Environment.GetEnvironmentVariable("IS_SCAFFOLDING") == "true")
+                return;
             Environment.SetEnvironmentVariable("IS_SCAFFOLDING", "true");
-
-            var arguments = $"ef dbcontext scaffold Name=DefaultConnection {Provider} --output-dir {OutputDir} --context-dir {ContextDir} --context {ContextName} --msbuildprojectextensionspath \"{MsBuildProjectExtensionsPath}\" --project {ProjectPath} --startup-project ../WebApi/WebApi.csproj --force";
+            
+            var arguments = $"ef dbcontext scaffold Name=DefaultConnection {Provider} --output-dir {OutputDir} --context-dir {ContextDir} --context {ContextName} --msbuildprojectextensionspath \"{MsBuildProjectExtensionsPath}\" --project {ProjectPath} --startup-project ../WebApi/WebApi.csproj --namespace Domain.Entities --context-namespace Infrastructure.Context --force --no-build";
 
             try
             {
@@ -110,7 +112,7 @@ namespace Infrastructure.Utils
                 {
                     if (!string.IsNullOrEmpty(e.Data))
                     {
-                        _logger.LogInformation("[OUTPUT]: {Message}", e.Data);
+                        _logger.LogInformation("[SCAFFOLD OUTPUT]: {Message}", e.Data);
                     }
                 };
 
@@ -118,7 +120,7 @@ namespace Infrastructure.Utils
                 {
                     if (!string.IsNullOrEmpty(e.Data))
                     {
-                        _logger.LogError("[ERROR]: {Message}", e.Data);
+                        _logger.LogError("[SCAFFOLD OUTPUT]: {Message}", e.Data);
                     }
                 };
 
@@ -126,12 +128,11 @@ namespace Infrastructure.Utils
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
                 process.WaitForExit();
-
                 if (process.ExitCode != 0)
                 {
                     throw new Exception("Scaffolding process failed. Check the logs for details.");
                 }
-
+                
                 _logger.LogInformation("Scaffolding process completed successfully.");
             }
             catch (Exception ex)

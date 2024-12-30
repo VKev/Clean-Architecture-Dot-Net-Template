@@ -8,7 +8,8 @@ namespace Infrastructure.Utils
 {
     public class SchemaComparer
     {
-        private static readonly string FilePath = "../Infrastructure/ScaffoldTrack/LocalSchema.bin";
+        private static readonly string SchemaFilePath = "../Infrastructure/Build/track/scaffoldtrack.bin";
+        private static readonly string MigrateFilePath = "../Infrastructure/Build/track/migratetrack.bin";
 
         public static string GenerateDatabaseSchemaHash(string host, int port, string database, string username, string password)
         {
@@ -59,8 +60,7 @@ namespace Infrastructure.Utils
     WHERE 
         c.table_schema = 'public'
     ORDER BY 
-        c.table_name, c.ordinal_position;
-";
+        c.table_name, c.ordinal_position;";
 
                 using (var command = new NpgsqlCommand(query, connection))
                 using (var reader = command.ExecuteReader())
@@ -87,9 +87,9 @@ namespace Infrastructure.Utils
 
         public static bool TryGetStoredHash(out string storedHash)
         {
-            if (File.Exists(FilePath))
+            if (File.Exists(SchemaFilePath))
             {
-                byte[] hashBytes = File.ReadAllBytes(FilePath);
+                byte[] hashBytes = File.ReadAllBytes(SchemaFilePath);
                 storedHash = Convert.ToBase64String(hashBytes);
                 return true;
             }
@@ -99,11 +99,37 @@ namespace Infrastructure.Utils
 
         public static void SaveHash(string hash)
         {
-            byte[] hashBytes = Convert.FromBase64String(hash);
-            using (var fileStream = new FileStream(FilePath, FileMode.Create, FileAccess.Write))
+            SaveToFile(SchemaFilePath, hash);
+            SetMigrationRequired(true);
+        }
+
+        public static void SetMigrationRequired(bool required)
+        {
+            string hash = Convert.ToBase64String(Encoding.UTF8.GetBytes(required.ToString()));
+            SaveToFile(MigrateFilePath, hash);
+        }
+
+        public static bool IsMigrationRequired()
+        {
+            if (!File.Exists(MigrateFilePath))
             {
-                fileStream.Write(hashBytes, 0, hashBytes.Length);
+                return false;
             }
+
+            byte[] hashBytes = File.ReadAllBytes(MigrateFilePath);
+            string value = Encoding.UTF8.GetString(Convert.FromBase64String(Convert.ToBase64String(hashBytes)));
+            return bool.Parse(value);
+        }
+
+        private static void SaveToFile(string filePath, string hash)
+        {
+            string? directoryPath = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath ?? string.Empty);
+            }
+            byte[] hashBytes = Convert.FromBase64String(hash);
+            File.WriteAllBytes(filePath, hashBytes);
         }
     }
 }
