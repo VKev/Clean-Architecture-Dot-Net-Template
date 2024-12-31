@@ -33,7 +33,12 @@ namespace Infrastructure.Common
 
         public async Task<T> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return await _dbSet.FindAsync(new object[] { id }, cancellationToken);
+            var entity = await _dbSet.FindAsync(new object[] { id }, cancellationToken);
+            if (entity == null)
+            {
+                throw new KeyNotFoundException($"{nameof(T)} with id {id} not found.");
+            }
+            return entity;
         }
 
         public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)

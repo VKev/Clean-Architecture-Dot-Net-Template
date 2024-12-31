@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Application.Common
+namespace Application.Common.ResponseModel
 {
     public sealed record Error(string Code, string Description)
     {

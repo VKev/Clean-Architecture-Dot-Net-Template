@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Users.Commands;
+using Application.Users.Queries;
 using AutoMapper;
 using Domain.Entities;
 
-namespace Application.Common
+namespace Application.Common.Mapper
 {
     public class AutoMapperProfile : Profile
     {
@@ -14,6 +15,9 @@ namespace Application.Common
         {
             CreateMap<CreateUserCommand, User>();
             CreateMap<User, CreateUserCommand>();
+
+            CreateMap<GetUserResponse, User>();
+            CreateMap<User, GetUserResponse>();
         }
         
     }
