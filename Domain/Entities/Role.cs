@@ -3,13 +3,11 @@ using System.Collections.Generic;
 
 namespace Domain.Entities;
 
-public partial class User
+public partial class Role
 {
-    public Guid UserId { get; set; }
+    public Guid RoleId { get; set; }
 
-    public string Name { get; set; } = null!;
-
-    public string Email { get; set; } = null!;
+    public string RoleName { get; set; } = null!;
 
     public DateTime? CreatedAt { get; set; }
 

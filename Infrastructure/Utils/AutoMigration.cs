@@ -31,11 +31,10 @@ namespace Infrastructure.Utils
         {
             if (Environment.GetEnvironmentVariable("IS_MIGRATING") == "true")
             {
-                _logger.LogWarning("Migration operation is already in progress. Skipping recursive call.");
                 return;
             }
             Environment.SetEnvironmentVariable("IS_MIGRATING", "true");
-
+            _logger.LogInformation("Generating new migration");
             try
             {
                 var arguments = $"ef migrations {command} {additionalArgs} " +
@@ -60,7 +59,7 @@ namespace Infrastructure.Utils
                 {
                     if (!string.IsNullOrEmpty(e.Data))
                     {
-                        _logger.LogInformation("[MIGRATION OUTPUT]: {Message}", e.Data);
+                        _logger.LogInformation("{Message}", e.Data);
                     }
                 };
 
@@ -68,7 +67,7 @@ namespace Infrastructure.Utils
                 {
                     if (!string.IsNullOrEmpty(e.Data))
                     {
-                        _logger.LogError("[MIGRATION ERROR]: {Message}", e.Data);
+                        _logger.LogError("{Message}", e.Data);
                     }
                 };
 
@@ -96,7 +95,6 @@ namespace Infrastructure.Utils
         
         public void GenerateMigration()
         {
-            _logger.LogInformation("Generating new migration: {MigrationName}", MigrationName);
             ExecuteMigrationCommand("add", MigrationName+"_"+DateTime.Now.ToString("yyyyMMddHHmmss"));
         }
 
