@@ -16,6 +16,8 @@ public partial class MyDbContext : DbContext
     {
     }
 
+    public virtual DbSet<Job> Jobs { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -28,6 +30,15 @@ public partial class MyDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresExtension("pgcrypto");
+
+        modelBuilder.Entity<Job>(entity =>
+        {
+            entity.HasKey(e => e.JobId).HasName("Job_pkey");
+
+            entity.ToTable("Job");
+
+            entity.Property(e => e.JobId).ValueGeneratedNever();
+        });
 
         modelBuilder.Entity<Role>(entity =>
         {
