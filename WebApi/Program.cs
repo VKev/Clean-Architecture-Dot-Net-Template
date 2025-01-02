@@ -4,9 +4,12 @@ using Infrastructure.Configs;
 using Infrastructure.Context;
 using Infrastructure.Utils;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Serilog;
+using WebApi.Configs;
 
 var builder = WebApplication.CreateBuilder(args);
+var environment = builder.Environment;
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -21,9 +24,20 @@ builder.Services.AddLogging(loggingBuilder =>
     loggingBuilder.AddSerilog();
 });
 
-
-builder.Services.AddDbContext<MyDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.ConfigureOptions<DatabaseConfigSetup>();
+builder.Services.AddDbContext<MyDbContext>((serviceProvider, options) =>
+{
+    var databaseConfig = serviceProvider.GetService<IOptions<DatabaseConfig>>()!.Value;
+    options.UseNpgsql(databaseConfig.ConnectionString, actions=>{
+        actions.EnableRetryOnFailure(databaseConfig.MaxRetryCount);
+        actions.CommandTimeout(databaseConfig.CommandTimeout);
+    });
+    if (environment.IsDevelopment())
+    {
+        options.EnableDetailedErrors(databaseConfig.EnableDetailedErrors);
+        options.EnableSensitiveDataLogging(databaseConfig.EnableSensitiveDataLogging);
+    }
+});
 
 builder.Services
     .AddApplication()
