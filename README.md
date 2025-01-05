@@ -1,18 +1,39 @@
-## Clean Architecture Template for .NET
+# Clean Architecture Template for .NET
 
-To use, clone this repository and create a .env file in same directory as Web.sln:
+A **Clean Architecture** template for the .NET framework, designed to provide a solid foundation for starting new projects. It comes with a pre-implemented simple REST API.
 
-```
-DATABASE_HOST=host_of_your_database
-DATABASE_PORT=port_of_your_database
-DATABASE_NAME=name_of_your_database
-DATABASE_USERNAME=your_username
-DATABASE_PASSWORD=your_password
-```
+---
 
-Remember to clean and build before run
-```
-dotnet clean
-dotnet build
-dotnet run
-```
+## How to Use
+
+1. Clone this repository.
+2. Create a `.env` file in the **src** folder with the following content:
+
+    ```dotenv
+    DATABASE_HOST=your_database_host
+    DATABASE_PORT=your_database_port
+    DATABASE_NAME=your_database_name
+    DATABASE_USERNAME=your_database_username
+    DATABASE_PASSWORD=your_database_password
+    ```
+
+3. Clean and build the solution before running the application:
+
+    ```bash
+    cd src/WebApi
+    dotnet clean
+    dotnet build
+    dotnet run
+    ```
+
+    The application will automatically scaffold entities based on the provided database configuration and generate the necessary migrations.
+
+---
+
+## Running Tests
+
+To execute the tests, navigate to the test directory and run the following command:
+
+```bash
+cd test
+dotnet test
