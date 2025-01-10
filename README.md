@@ -7,7 +7,7 @@ A **Clean Architecture** template for the .NET framework, designed to provide a 
 ## How to Use
 
 1. Clone this repository.
-2. Create a `.env` file in the **src** folder with the following content:
+2. Create a `.env` file in the `src` folder with the following content:
 
     ```dotenv
     DATABASE_HOST=your_database_host
@@ -26,7 +26,9 @@ A **Clean Architecture** template for the .NET framework, designed to provide a 
     dotnet run
     ```
 
-    The application will automatically scaffold entities based on the provided database configuration and generate the necessary migrations.
+    The application will automatically scaffold entities and generate the necessary migrations when detected changed in database.
+
+    To scaffold and migration when needed even database not change, please delete `track` folder in `src/infrastructure/Build` and `dotnet run` again.
 
 ---
 
