@@ -39,3 +39,18 @@ To execute the tests, navigate to the test directory and run the following comma
 ```bash
 cd test
 dotnet test
+```
+
+---
+
+## Docker
+
+To build the Docker image, run the following command:
+```bash
+docker build -t test-service .
+```
+
+To run the container, use this command:
+```bash
+docker run -d -p 5196:8080 -e ASPNETCORE_ENVIRONMENT=Production -e DATABASE_HOST=your_database_host -e DATABASE_PORT=your_database_port -e DATABASE_NAME=your_database_name -e DATABASE_USERNAME=your_database_username -e DATABASE_PASSWORD=your_database_password --name test-service test-service
+```
