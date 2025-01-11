@@ -26,22 +26,22 @@ namespace Infrastructure
                 DotNetEnv.Env.Load(Path.Combine(solutionDirectory, ".env"));
             }
             services.AddSingleton<EnvironmentConfig>();
+            using var serviceProvider = services.BuildServiceProvider();
+            var logger = serviceProvider.GetRequiredService<ILogger<AutoScaffold>>();
+            var config = serviceProvider.GetRequiredService<EnvironmentConfig>();
+            var scaffold = new AutoScaffold(logger)
+                .Configure(
+                    config.DatabaseHost,
+                    config.DatabasePort,
+                    config.DatabaseName,
+                    config.DatabaseUser,
+                    config.DatabasePassword,
+                    config.DatabaseProvider);
+
+            scaffold.UpdateAppSettings();
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             if (environment == "Development")
             {
-                using var serviceProvider = services.BuildServiceProvider();
-                var logger = serviceProvider.GetRequiredService<ILogger<AutoScaffold>>();
-                var config = serviceProvider.GetRequiredService<EnvironmentConfig>();
-                var scaffold = new AutoScaffold(logger)
-                    .Configure(
-                        config.DatabaseHost,
-                        config.DatabasePort,
-                        config.DatabaseName,
-                        config.DatabaseUser,
-                        config.DatabasePassword,
-                        config.DatabaseProvider);
-
-                scaffold.UpdateAppSettings();
 
                 var autoMigration = new AutoMigration(logger);
 
